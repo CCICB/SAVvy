@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+	    <!-- Google tag (gtag.js) -->
+	    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S7K1DTE7VH"></script>
+	    <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-S7K1DTE7VH');
+        </script>
+	    <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SAVvy</title>
+        <link rel="stylesheet" href="static/css/home.css">
+        <!-- <link rel="stylesheet" href="/static/css/home.css"> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <link href="https://cdn.datatables.net/v/se/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/sb-1.6.0/sp-2.2.0/sl-1.7.0/datatables.min.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/v/se/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/sb-1.6.0/sp-2.2.0/sl-1.7.0/datatables.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/igv@2.15.10/dist/igv.min.js"></script>
+        <script src="https://proteinpaint.stjude.org/bin/proteinpaint.js" charset="utf-8"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+        <link rel="icon" href="../src/logo.svg" type="image/svg+xml">
+        <link rel="stylesheet" href="../style.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js"></script>
+	    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js"></script> -->
+    </head>
+    <body>
+	<div class="overflowing pusher">
+	    <div class="ui borderless main menu sticky">
+            <div class="ui nav container">
+		        <div class="header"><a class="item">
+           	        <img style="height: 40px; width: 40px;" class="logo" src="splicevardb.png">
+		            <b>SAVvy</b></a>
+		        </div>
+                <a id="TOU_pull" class="item">Register</a>
+                <a id="Login_pull" class="item">Sign in</a>
+                <a href="https://compbio.ccia.org.au/splicevardb-api/doc/" target="_blank" class="item">API</a>
+                <a id="Submit_pull" class="item">Submit Variants</a>
+                <a class="item" href="https://doi.org/10.1016/j.ajhg.2024.08.002" target="_blank">Publication</a>
+                <a href="https://compbio.ccia.org.au" target="_blank" class="item">Lab Home</a>
+            </div>
+    	</div>
+	
+        <div class="ui fluid container content">
+            <div style="position: relative">
+                <h1 class="ui header" style="margin: 0 !important">Savvy</h1>
+		        <div id="buildToggle_buttons" class="ui buttons" style="display: none; position: absolute; right: 0; top: 0;" >
+                    <button id="hg38_toggle" onclick="buildToggle('hg38')" class="ui button">hg38</button>
+                    <div class="or"></div>
+                    <button id="hg19_toggle" onclick="buildToggle('hg19')" class="ui button">hg19</button>
+		        </div>
+            </div>
+            <div id="input" class="ui raised segment">
+            	<div class="ui form">
+ 		    <div class="field">
+		    	<label for="sequence">Chromosome: </label>
+	    	    	<input type="text" id="chromosome" value="17">
+		    </div>
+  		    <div class="field">
+    		    	<label for="exonEnd">Region Start: </label>
+   		    	<input type="number" id="start" min="1" value="31181480">
+  		    </div>
+		    <div class="field">
+                        <label for="exonStart">Region End: </label>
+                        <input type="number" id="end" min="1" value="31181710">
+                    </div>
+  		    <button class="ui button" id="parseButton" onclick="fetchAndDisplaySequence()">Fetch Sequence</button>
+	    	</div>
+	    </div>
+	    <div id="input2" class="ui raised segment">
+                <div class="ui form">
+                    <div class="field">
+                        <label for="sequence">Variant: </label>
+			<input type="text" id="variant" value="17:31181710G>T">
+                    </div>
+                    <button class="ui button" id="variantButton" onclick="parseVariant()">Submit Variant</button>
+                </div>
+            </div>
+	    <div id="sequence-container" class="ui raised segment"></div>
+
+	    <div id="visualisation" class="ui raised segment">
+		<div class="ui grid">
+		    <div id="donor" class="four wide column">
+			<h3 class="ui top attached header" style="background-color: #feaa92;">Donor</h3>
+			<div class="ui attached segment">
+			    <table class="ui celled fixed table motif center aligned">
+				<tbody>
+				    <tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				    </tr>
+				    <tr>
+                                        <td>E-3</td>
+                                        <td>E-2</td>
+                                        <td>E-1</td>
+                                        <td>+1</td>
+                                        <td>+2</td>
+                                        <td>+3</td>
+                                        <td>+4</td>
+                                        <td>+5</td>
+                                        <td>+6</td>
+                                    </tr>
+				</tbody>
+			    </table>
+                        </div>
+		    </div>
+		    <div id="branchpoint" class="three wide column" style="padding: 1rem 0 !important; display: inline-flex;">
+			<button id="bp_scroll_left" class="ui left icon button" style="margin: 0">
+    			    <i class="left chevron icon"></i>
+  			</button>
+			<div>
+			    <h3 class="ui top attached header" style="background-color: #ace2f5;">Branchpoint</h3>
+                    	    <div class="ui attached segment">
+			    	<table class="ui celled fixed table motif center aligned">
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>-3</td>
+                                        <td>-2</td>
+                                        <td>-1</td>
+                                        <td>0</td>
+                                        <td>+1</td>
+                                    </tr>
+                                </tbody>
+                            	</table>
+			    </div>
+			</div>
+			<button id="bp_scroll_right" class="ui right icon button" style="margin: 0">
+                            <i class="right chevron icon"></i>
+                        </button>
+		    </div>
+		    <div id="acceptor" class="nine wide column">
+			<h3 class="ui top attached header" style="background-color: #eceaae;">Acceptor</h3>
+			<div class="ui attached segment">
+                            <table class="ui celled fixed table motif center aligned">
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+					<td></td>
+					<td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+					<td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+				    <tr>
+					<td>-20</td>
+                                        <td>-19</td>
+					<td>-18</td>
+                                        <td>-17</td>
+                                        <td>-16</td>
+                                        <td>-15</td>
+                                        <td>-14</td>
+                                        <td>-13</td>
+                                        <td>-12</td>
+                                        <td>-11</td>
+                                        <td>-10</td>
+                                        <td>-9</td>
+                                        <td>-8</td>
+                                        <td>-7</td>
+                                        <td>-6</td>
+                                        <td>-5</td>
+					<td>-4</td>
+                                        <td>-3</td>
+                                        <td>-2</td>
+                                        <td>-1</td>
+                                        <td>E+1</td>
+                                        <td>E+2</td>
+                                        <td>E+3</td>
+				    </tr>
+                                </tbody>
+                            </table>
+			</div>
+                    </div>
+		</div>
+            	<div id="output" class="sequence shrink-to-fit"></div>
+		<div id="heuristics"></div>
+	    </div>
+
+	    <div>
+
+            <div class="ui container raised segment variants" id="results">
+                <table class="ui table hover">
+                    <thead>
+                        <tr id="table-head">
+                            <th>+</th>
+                            <th>Variant (hg38)</th>
+			                <th>Variant (hg19)</th>
+                            <th>Gene</th>
+                            <th>HGVS</th>
+                            <th>Validation</th>
+                            <th>Classification</th>
+			                <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody id="displayVariants">
+                    </tbody>
+                </table>
+                <div class="error"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="static/js/home.js" defer></script>
+<!-- <script src="static/js/home.js" defer></script> -->
+</html>
