@@ -1307,16 +1307,17 @@ function formatValidation(v) {
     };
 
 function defineHeuristics(exonEnd, exonStart) {
-    exonStart = exonStart + 1;
+    exonStart = exonStart - 1;
+    exonEnd = exonEnd - 1;
     return [
-	{ range: [exonEnd - 3, exonEnd - 3], heuristic: ['DD12', 'DD3'] },
-	{ range: [exonEnd - 2, exonEnd - 2], heuristic: ['DD11', 'DD3'] },
-	{ range: [exonEnd - 1, exonEnd - 1], heuristic: ['DD7', 'DD4'] },
-	{ range: [exonEnd + 0, exonEnd + 1], heuristic: 'DD2' },
-	{ range: [exonEnd + 2, exonEnd + 2], heuristic: ['DD8', 'DD5'] },
-	{ range: [exonEnd + 3, exonEnd + 3], heuristic: ['DD10', 'DD5'] },
-	{ range: [exonEnd + 4, exonEnd + 4], heuristic: ['DD6', 'DD4'] },
-	{ range: [exonEnd + 5, exonEnd + 5], heuristic: 'DD9' },
+	{ range: [exonEnd - 2, exonEnd - 2], heuristic: ['DD12', 'DD3'] },
+	{ range: [exonEnd - 1, exonEnd - 1], heuristic: ['DD11', 'DD3'] },
+	{ range: [exonEnd - 0, exonEnd - 0], heuristic: ['DD7', 'DD4'] },
+	{ range: [exonEnd + 1, exonEnd + 2], heuristic: 'DD2' },
+	{ range: [exonEnd + 3, exonEnd + 3], heuristic: ['DD8', 'DD5'] },
+	{ range: [exonEnd + 4, exonEnd + 4], heuristic: ['DD10', 'DD5'] },
+	{ range: [exonEnd + 5, exonEnd + 5], heuristic: ['DD6', 'DD4'] },
+	{ range: [exonEnd + 6, exonEnd + 6], heuristic: 'DD9' },
   	{ range: [exonStart - 24, exonStart - 5], heuristic: 'DA1' },
   	{ range: [exonStart - 24, exonStart - 7], heuristic: 'DA9' },
   	{ range: [exonStart - 2, exonStart - 1], heuristic: 'DA2' },
