@@ -9,7 +9,7 @@ const date_tag = date.getUTCFullYear() + (1 + date.getUTCMonth()).toString().pad
 
 var comma_genes = [];
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 let branchpointIndex = []; // Define an empty array to be filled dynamically
@@ -128,7 +128,7 @@ function downloadButton() {
     if (localStorage.getItem('splicevardb_token')) {
     	$(".dt-buttons button").addClass("cci_green");
     } else {
-	$(".dt-buttons button").removeClass("cci_green");
+	    $(".dt-buttons button").removeClass("cci_green");
     }
 }
 
@@ -137,22 +137,23 @@ function buildToggle(version) {
     let hg38_column = table.column(1);
     let hg19_column = table.column(2);
     if (version == "hg38") {
-	if (!($("#hg38_toggle").hasClass("cci_green"))) {    
-	    $("#hg19_toggle").removeClass("cci_green")
-	    $("#hg38_toggle").addClass("cci_green")
-	    genome_build = "hg38";
-	    hg19_column.visible(false);
-	    hg38_column.visible(true);
-	}
+        if (!($("#hg38_toggle").hasClass("cci_green"))) {    
+            $("#hg19_toggle").removeClass("cci_green")
+            $("#hg38_toggle").addClass("cci_green")
+            genome_build = "hg38";
+            hg19_column.visible(false);
+            hg38_column.visible(true);
+        }
     } else if (version == "hg19") {
-	if (!($("#hg19_toggle").hasClass("cci_green"))) {
-	    $("#hg38_toggle").removeClass("cci_green")
-	    $("#hg19_toggle").addClass("cci_green")
-	    genome_build = "hg19";
-	    hg38_column.visible(false);
-            hg19_column.visible(true);
-	}
+        if (!($("#hg19_toggle").hasClass("cci_green"))) {
+            $("#hg38_toggle").removeClass("cci_green")
+            $("#hg19_toggle").addClass("cci_green")
+            genome_build = "hg19";
+            hg38_column.visible(false);
+                hg19_column.visible(true);
+        }
     }
+    
     if ($('#lollipop').is(':visible')) {
         document.getElementById('lollipop').style.display = "none";
         populateProteinPaint();
@@ -1328,45 +1329,43 @@ function defineHeuristics(exonEnd, exonStart) {
     ];
 }
 
-    function getHeuristics(position, heuristicMap) {
-      return heuristicMap
+function getHeuristics(position, heuristicMap) {
+    return heuristicMap
         .filter(({ range }) => position >= range[0] && position <= range[1])
         .flatMap(({ heuristic }) => (Array.isArray(heuristic) ? heuristic : [heuristic]));
-    }
+}
+ 
+function parseSequence(sequenceInput, exonEnd, exonStart, variant) {
 
-
-     
-   function parseSequence(sequenceInput, exonEnd, exonStart, variant) {
-
-      // Validate sequence
-      if (!/^[ATGC]+$/.test(sequenceInput)) {
+    // Validate sequence
+    if (!/^[ATGC]+$/.test(sequenceInput)) {
         alert('Invalid sequence! Only A, T, G, and C are allowed.');
         return;
-      }
+    }
 
-      const sequenceLength = sequenceInput.length;
+    const sequenceLength = sequenceInput.length;
 
-      if (exonEnd < 1 || exonEnd > sequenceLength) {
+    if (exonEnd < 1 || exonEnd > sequenceLength) {
         alert('Exon end position is out of range.');
         return;
-      }
+    }
 
-      if (exonStart < 1 || exonStart > sequenceLength) {
+    if (exonStart < 1 || exonStart > sequenceLength) {
         alert('Exon start position is out of range.');
         return;
-      }
+    }
 
-      branchpointIndex = findBranchpoint(sequenceInput.substring(exonStart-53,exonStart-15), exonStart-53);
+    branchpointIndex = findBranchpoint(sequenceInput.substring(exonStart-53,exonStart-15), exonStart-53);
 
-      const outputDiv = document.getElementById('output');
-      outputDiv.innerHTML = '';
+    const outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = '';
 
-      const heuristicsDiv = document.getElementById('heuristics');
-      heuristicsDiv.innerHTML = '';
-      const heuristicMap = defineHeuristics(exonEnd, exonStart);
+    const heuristicsDiv = document.getElementById('heuristics');
+    heuristicsDiv.innerHTML = '';
+    const heuristicMap = defineHeuristics(exonEnd, exonStart);
 
-      // Render the sequence
-      for (let i = 0; i < sequenceLength; i++) {
+    // Render the sequence
+    for (let i = 0; i < sequenceLength; i++) {
         const nucleotide = sequenceInput[i];
         const span = document.createElement('span');
         span.className = `nucleotide ${nucleotide}`;
@@ -1374,78 +1373,77 @@ function defineHeuristics(exonEnd, exonStart) {
         // Calculate position label
         let label;
 
-	if (i < exonEnd) {
-	    label = `E${i - exonEnd}`; // Exonic position
-            span.classList.add('exon');
-	} else if (i + 1 < exonStart) {
-	    if (exonStart - (i + 1) >= (i + 1) - exonEnd) { 
-        	label = `+${(i + 1) - exonEnd}`; // Intronic position (closer to upstream)
-	    } else {
-		label = -(exonStart - (i + 1)); // Intronic position (closer to downstream)
+        if (i < exonEnd) {
+            label = `E${i - exonEnd}`; // Exonic position
+                span.classList.add('exon');
+        } else if (i + 1 < exonStart) {
+            if (exonStart - (i + 1) >= (i + 1) - exonEnd) { 
+                label = `+${(i + 1) - exonEnd}`; // Intronic position (closer to upstream)
+            } else {
+                label = -(exonStart - (i + 1)); // Intronic position (closer to downstream)
             }
-	} else {
-          label = `E+${i + 2 - exonStart}`; // Exonic position
-          span.classList.add('exon');
+        } else {
+            label = `E+${i + 2 - exonStart}`; // Exonic position
+            span.classList.add('exon');
         }
 
-	// Highlight the variant location
+	    // Highlight the variant location
         if (i == variant) {
             span.classList.add('variant');
         }
 
-	if (i - exonEnd >= -3 && i - exonEnd < 6) {
-	  let firstEmptyTd = $('#donor td:empty').first();
-	  firstEmptyTd.addClass(`${nucleotide}`);
-	  firstEmptyTd.text(nucleotide);
+        if (i - exonEnd >= -3 && i - exonEnd < 6) {
+            let firstEmptyTd = $('#donor td:empty').first();
+            firstEmptyTd.addClass(`${nucleotide}`);
+            firstEmptyTd.text(nucleotide);
 
-	  span.classList.add('donor', 'with-bar');
-	  firstEmptyTd.on('click', () => {
-              const heuristics = getHeuristics(i, heuristicMap);
-              populateHeuristics(heuristics);
-          });
-	} else if (exonStart - i < 22 && exonStart - i >= -1 ) {
-	  let firstEmptyTd = $('#acceptor td:empty').first();
-          firstEmptyTd.addClass(`${nucleotide}`);
-          firstEmptyTd.text(nucleotide);
+            span.classList.add('donor', 'with-bar');
+            firstEmptyTd.on('click', () => {
+                const heuristics = getHeuristics(i, heuristicMap);
+                populateHeuristics(heuristics);
+            });
+        } else if (exonStart - i < 22 && exonStart - i >= -1 ) {
+            let firstEmptyTd = $('#acceptor td:empty').first();
+            firstEmptyTd.addClass(`${nucleotide}`);
+            firstEmptyTd.text(nucleotide);
 	
-	  span.classList.add('acceptor', 'with-bar')
-	  firstEmptyTd.on('click', () => {
-              const heuristics = getHeuristics(i, heuristicMap);
-              populateHeuristics(heuristics);
-          });
-	} else if (branchpointIndex.some(bp => i >= bp.index && i < bp.index + 5)) {
-	  const bpMatch = getMatchNumber(branchpointIndex, i)
-	  
-          span.classList.add('branchpoint', 'with-bar', `bpOpt${bpMatch}`);
-	} else if ( i % 10 == 0) {
-          span.classList.add('chevron');
-	}
+            span.classList.add('acceptor', 'with-bar')
+            firstEmptyTd.on('click', () => {
+                const heuristics = getHeuristics(i, heuristicMap);
+                populateHeuristics(heuristics);
+            });
+        } else if (branchpointIndex.some(bp => i >= bp.index && i < bp.index + 5)) {
+            const bpMatch = getMatchNumber(branchpointIndex, i)
+	        span.classList.add('branchpoint', 'with-bar', `bpOpt${bpMatch}`);
+        } else if ( i % 10 == 0) {
+            span.classList.add('chevron');
+        }
 
-	span.setAttribute('data-index',i);
+        span.setAttribute('data-index',i);
         span.setAttribute('data-content', label);
         span.textContent = nucleotide;
 
         span.addEventListener('click', () => {
-          const heuristics = getHeuristics(i, heuristicMap);
-	  populateHeuristics(heuristics);
-	});
+            const heuristics = getHeuristics(i, heuristicMap);
+            populateHeuristics(heuristics);
+        });
 
         outputDiv.appendChild(span);
-      }
-      fitSpansToContainer('output');
-      updateFocusBP(branchpointIndex.length-1)
-      selectBP(branchpointIndex);
-      $('.nucleotide').popup();
+    }
+    fitSpansToContainer('output');
+    updateFocusBP(branchpointIndex.length-1)
+    selectBP(branchpointIndex);
+    $('.nucleotide').popup();
 };
 
 function findBranchpoint(inputString, inputIndex) {
     const regex = /.T.A./g;
     const matches = Array.from(inputString.matchAll(regex)).map(match => ({
-	...match,
-	index: match.index + inputIndex,
-	label: -52 + match.index
+        ...match,
+        index: match.index + inputIndex,
+        label: -52 + match.index
     }));
-    console.log(matches);
+
     return matches;
 }
 
@@ -1504,131 +1502,124 @@ $('#bp_scroll_right').on('click', function () {
 });
 
 function fitSpansToContainer(containerId) {
-  const container = document.getElementById(containerId);
-  const spans = container.querySelectorAll('span');
+    const container = document.getElementById(containerId);
+    const spans = container.querySelectorAll('span');
 
-  let fontSize = 20; // Initial maximum font size
-  let maxFontSize = 20;
-	
-  const containerWidth = container.getBoundingClientRect().width;
+    let maxFontSize = 20;
   
-  const getTotalWidth = () => {
-  // Hide the container to force recalculation
-  container.style.display = 'none';
-  container.offsetHeight; // Trigger reflow while hidden
-  container.style.display = ''; // Show the container again
+    const getTotalWidth = () => {
+        // Hide the container to force recalculation
+        container.style.display = 'none';
+        container.offsetHeight; // Trigger reflow while hidden
+        container.style.display = ''; // Show the container again
 
-  // Sum up the widths of all spans
-  return Array.from(spans).reduce((total, span) => total + span.getBoundingClientRect().width, 0);
-};
+        // Sum up the widths of all spans
+        return Array.from(spans).reduce((total, span) => total + span.getBoundingClientRect().width, 0);
+    };
 
-const adjustFontSize = () => {
-  let fontSize = maxFontSize;
+    const adjustFontSize = () => {
+        let fontSize = maxFontSize;
 
-  while (getTotalWidth() > container.getBoundingClientRect().width && fontSize > 1) {
-    fontSize--;
+        while (getTotalWidth() > container.getBoundingClientRect().width && fontSize > 1) {
+            fontSize--;
 
-    // Apply font size to all spans
-    spans.forEach(span => {
-      span.style.fontSize = `${fontSize}px`;
+            // Apply font size to all spans
+            spans.forEach(span => {
+                span.style.fontSize = `${fontSize}px`;
+            });
+
+            // Hide and show the container to force a layout recalculation
+            container.style.display = 'none'; // Hide container
+            container.offsetHeight; // Trigger reflow while hidden
+            container.style.display = ''; // Show container again
+        }
+        adjustedFontSize = fontSize;
+        spans.forEach(span => (span.style.fontSize = `${adjustedFontSize}px`));
+    };
+
+    container.addEventListener('mousemove', (event) => {
+        const hoveredElement = event.target;
+
+        if (hoveredElement.tagName === 'SPAN') {
+            const hoveredIndex = Array.from(spans).indexOf(hoveredElement);
+
+            // Adjust font sizes based on proximity to the hovered span
+            spans.forEach((span, index) => {
+                const distance = Math.abs(index - hoveredIndex);
+                const zoomedFontSize = Math.max(Math.max(adjustedFontSize * 3, 50) - distance * 4, adjustedFontSize); // Larger for closer spans
+                span.style.fontSize = `${zoomedFontSize}px`;
+            });
+        }
     });
 
-    // Hide and show the container to force a layout recalculation
-    container.style.display = 'none'; // Hide container
-    container.offsetHeight; // Trigger reflow while hidden
-    container.style.display = ''; // Show container again
-  }
-  adjustedFontSize = fontSize;
-  spans.forEach(span => (span.style.fontSize = `${adjustedFontSize}px`));
-};
-
-container.addEventListener('mousemove', (event) => {
-  const hoveredElement = event.target;
-
-  if (hoveredElement.tagName === 'SPAN') {
-    const hoveredIndex = Array.from(spans).indexOf(hoveredElement);
-
-    // Step 1: Adjust font sizes based on proximity to the hovered span
-    spans.forEach((span, index) => {
-      const distance = Math.abs(index - hoveredIndex);
-      const zoomedFontSize = Math.max(Math.max(adjustedFontSize * 3, 50) - distance * 4, adjustedFontSize); // Larger for closer spans
-      span.style.fontSize = `${zoomedFontSize}px`;
+    // Reset font sizes to adjustedFontSize when mouse leaves the container
+    container.addEventListener('mouseleave', () => {
+        spans.forEach(span => (span.style.fontSize = `${adjustedFontSize}px`));
     });
-  }
-});
-
-// Reset font sizes to adjustedFontSize when mouse leaves the container
-container.addEventListener('mouseleave', () => {
-  spans.forEach(span => (span.style.fontSize = `${adjustedFontSize}px`));
-});
- 
-  adjustFontSize();
+    
+    adjustFontSize();
 }
 
 function populateHeuristics(heuristics) {
     const heuristicsDiv = document.getElementById('heuristics');
 	// Clear heuristics when a new nucleotide is clicked
-          heuristicsDiv.innerHTML = '';
+    heuristicsDiv.innerHTML = '';
 
-          heuristics.forEach(heuristic => {
-            const heuristicDiv = document.createElement('div');
-            heuristicDiv.className = 'heuristic';
+    heuristics.forEach(heuristic => {
+        const heuristicDiv = document.createElement('div');
+        heuristicDiv.className = 'heuristic';
 
-            const img = document.createElement('img');
-            img.src = `heuristics/${heuristic}.png`;
-            img.alt = heuristic;
+        const img = document.createElement('img');
+        img.src = `heuristics/${heuristic}.png`;
+        img.alt = heuristic;
 
-            const explanation = document.createElement('p');
-            explanation.textContent = `This variant falls under the heuristic ${heuristic}.`;
+        const explanation = document.createElement('p');
+        explanation.textContent = `This variant falls under the heuristic ${heuristic}.`;
 
-            heuristicDiv.appendChild(img);
-            heuristicDiv.appendChild(explanation);
+        heuristicDiv.appendChild(img);
+        heuristicDiv.appendChild(explanation);
 
-            heuristicsDiv.appendChild(heuristicDiv);
-          });
+        heuristicsDiv.appendChild(heuristicDiv);
+    });
 }
 
-
 async function fetchFeature(feature, chromosome, start, end) {
-            const url = `https://rest.ensembl.org/overlap/region/human/${chromosome}:${start}..${end}?content-type=application/json;feature=${feature}`;
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error('Failed to fetch genome sequence');
-            }
-            const data = await response.json();
-            return data;
-        }
-
+    const url = `https://rest.ensembl.org/overlap/region/human/${chromosome}:${start}..${end}?content-type=application/json;feature=${feature}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error('Failed to fetch genome sequence');
+    }
+    const data = await response.json();
+    return data;
+}
 
 async function fetchGenomeSequence(chromosome, start, end, buffer) {
-            const url = `https://rest.ensembl.org/sequence/region/human/${chromosome}:${start-buffer}..${end+buffer}?content-type=application/json`;
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error('Failed to fetch genome sequence');
-            }
-            const data = await response.json();
-            return data.seq;
-        }
+    const url = `https://rest.ensembl.org/sequence/region/human/${chromosome}:${start-buffer}..${end+buffer}?content-type=application/json`;
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error('Failed to fetch genome sequence');
+    }
+    const data = await response.json();
+    return data.seq;
+}
 
-        async function fetchAndDisplaySequence(variant) {
-            const buffer = 5;
-            try {
+async function fetchAndDisplaySequence(variant) {
+    const buffer = 5;
+    try {
 		const transcripts = await fetchFeature('transcript', variant.chrom, variant.pos, variant.pos);
-                const maneSelectTranscript = transcripts.find(t => t.tag && t.tag.includes("MANE_Select"));
+        const maneSelectTranscript = transcripts.find(t => t.tag && t.tag.includes("MANE_Select"));
 		
-		console.log(maneSelectTranscript);
 		const featureTranscript = maneSelectTranscript;
 		const exons = await fetchFeature('exon', variant.chrom, featureTranscript.start, featureTranscript.end);
 		const featureExons = exons.filter(t => t.Parent === featureTranscript.id);
-            	console.log(featureExons);
 
 		// Find the closest end value that is less than the defined end
 		const closestEnd = featureExons.reduce((prev, curr) =>
-    		    (curr.end <= variant.pos && (!prev || curr.end > prev.end)) ? curr : prev, null);
+    		(curr.end <= variant.pos && (!prev || curr.end > prev.end)) ? curr : prev, null);
 
 		// Find the closest start value that is greater than the defined start
 		const closestStart = featureExons.reduce((prev, curr) =>
-    		    (curr.start >= variant.pos && (!prev || curr.start < prev.start)) ? curr : prev, null);
+    		(curr.start >= variant.pos && (!prev || curr.start < prev.start)) ? curr : prev, null);
 
 		console.log("Closest End:", closestEnd);
 		console.log("Closest Start:", closestStart);
@@ -1639,139 +1630,137 @@ async function fetchGenomeSequence(chromosome, start, end, buffer) {
 		parseSequence(alt_sequence.toUpperCase(), buffer, alt_sequence.length-buffer+1, var_pos)
 
 		$('#' + 'sequence-container').html("<div>" +
-                    `<h3>MANE Select Transcript: ${featureTranscript.id}</h3>` +
+            `<h3>MANE Select Transcript: ${featureTranscript.id}</h3>` +
 		    `<p>Exons in region: ${closestEnd.rank} - ${closestStart.rank}</p>` +
 		    `<p>Sequence for region: ${variant.chrom}:${closestEnd.end}-${closestStart.start}</p>` +
 		    `<p style="overflow: scroll;">${sequence}</p>` +
-                "</div>")
+            "</div>")
 
-	    } catch (error) {
-                console.error(error);
+	} catch (error) {
+        console.error(error);
 
-                document.getElementById('sequence-container').textContent = 'Error fetching sequence.';
-            }
-        }
+        document.getElementById('sequence-container').textContent = 'Error fetching sequence.';
+    }
+}
 
-	async function parseVariant() {
-	    const variant = $("#variant").val().trim()
-            const genomeVersion = 38
+async function parseVariant() {
+	const variant = $("#variant").val().trim()
+    const genomeVersion = 38
 
-	    const norm_variant = await normaliseVariant(variant, genomeVersion)
+    const norm_variant = await normaliseVariant(variant, genomeVersion)
+    fetchAndDisplaySequence(norm_variant)
+}
 
-	    fetchAndDisplaySequence(norm_variant)
-	}
-
-	// Input variant normalisation from bw spliceai-lookup
-	async function normaliseVariant(variant, genomeVersion) {
-        /* Convert the given variant to a standardized "{chrom}-{pos}-{ref}-{alt}" string using a regular expression, or
-         * if that fails, assume the variant is in HGVS notation and try using the Ensembl hgvs API to convert it.
-         *
-         * Args:
-         *  variant (string): user input text
-         *  genomeVersion (string): "37" or "38"
-         *
-         * Return:
-         *  string: the input variant reformatted as a "{chrom}-{pos}-{ref}-{alt}" string
-         */
-
-        const ensemblApiPrefix = `https://${genomeVersion == '37' ? 'grch37.' : ''}rest.ensembl.org/vep/human/hgvs/`
+// Input variant normalisation from bw spliceai-lookup
+async function normaliseVariant(variant, genomeVersion) {
+/* Convert the given variant to a standardized "{chrom}-{pos}-{ref}-{alt}" string using a regular expression, or
+* if that fails, assume the variant is in HGVS notation and try using the Ensembl hgvs API to convert it.
+*
+* Args:
+*  variant (string): user input text
+*  genomeVersion (string): "37" or "38"
+*
+* Return:
+*  string: the input variant reformatted as a "{chrom}-{pos}-{ref}-{alt}" string
+*/
+    const ensemblApiPrefix = `https://${genomeVersion == '37' ? 'grch37.' : ''}rest.ensembl.org/vep/human/hgvs/`
 	const VARIANT_RE = new RegExp(
-            "^[\\s]*" +
-            "(chr)?([0-9XYMTt]{1,2})" +
-            "[-\\p{Pd}\\s:]+" +
-            "([0-9,]+)" +
-            "[-\\p{Pd}\\s:]*" +
-            "([ACGT]+)" +
-            "[-\\p{Pd}\\s:>]+" +
-            "([ACGT]+)",
-            'iu'
-        )
+        "^[\\s]*" +
+        "(chr)?([0-9XYMTt]{1,2})" +
+        "[-\\p{Pd}\\s:]+" +
+        "([0-9,]+)" +
+        "[-\\p{Pd}\\s:]*" +
+        "([ACGT]+)" +
+        "[-\\p{Pd}\\s:>]+" +
+        "([ACGT]+)",
+        'iu'
+    )
 
-        let chrom, pos, ref, alt, variantConsequence
-        let matchedRegExp = variant.match(VARIANT_RE)
-        let ensemblApiUrl, ensemblApiResponse, ensemblApiResponseJson
-        if (matchedRegExp) {
-            // was able to parse the user input using a simple reg-exp
-            chrom = matchedRegExp[2].toUpperCase()
-            pos = parseInt(matchedRegExp[3].replace(/,/g, ""))
-            ref = matchedRegExp[4].toUpperCase()
-            alt = matchedRegExp[5].toUpperCase()
+    let chrom, pos, ref, alt, variantConsequence
+    let matchedRegExp = variant.match(VARIANT_RE)
+    let ensemblApiUrl, ensemblApiResponse, ensemblApiResponseJson
+    if (matchedRegExp) {
+        // was able to parse the user input using a simple reg-exp
+        chrom = matchedRegExp[2].toUpperCase()
+        pos = parseInt(matchedRegExp[3].replace(/,/g, ""))
+        ref = matchedRegExp[4].toUpperCase()
+        alt = matchedRegExp[5].toUpperCase()
 
-            if (ref.length == 1) {
-                //handle SNPs and insertions
-                ensemblApiUrl = `${ensemblApiPrefix}${chrom}:g.${pos}${ref}>${alt}`
-            } else if(alt.length == 1) {
-                //handle deletions
-                ensemblApiUrl = `${ensemblApiPrefix}${chrom}:g.${pos+1}_${pos+ref.length-1}del${ref.slice(1)}`
-            } else {
-                //converting MNP into HGVS is not straight forward, so just return the variant
-                return { 'variant': `${chrom}-${pos}-${ref}-${alt}` }
-            }
+        if (ref.length == 1) {
+            //handle SNPs and insertions
+            ensemblApiUrl = `${ensemblApiPrefix}${chrom}:g.${pos}${ref}>${alt}`
+        } else if(alt.length == 1) {
+            //handle deletions
+            ensemblApiUrl = `${ensemblApiPrefix}${chrom}:g.${pos+1}_${pos+ref.length-1}del${ref.slice(1)}`
+        } else {
+            //converting MNP into HGVS is not straight forward, so just return the variant
+            return { 'variant': `${chrom}-${pos}-${ref}-${alt}` }
         }
-        else {
-            //assume the variant is already in HGVS notation
-            ensemblApiUrl = `${ensemblApiPrefix}${variant.trim()}`
-        }
+    }
+    else {
+        //assume the variant is already in HGVS notation
+        ensemblApiUrl = `${ensemblApiPrefix}${variant.trim()}`
+    }
 
 
-        // try calling the Ensembl API on the user input
+    // try calling the Ensembl API on the user input
+    try {
         try {
-            try {
-                ensemblApiResponse = await makeRequest(ensemblApiUrl + "?content-type=application/json&vcf_string=1")
-            } catch (error) {
-                console.error(error)
-                throw Error(`Ensembl API call failed: Unable to reach server`)
-            }
-
-            ensemblApiResponseJson = await ensemblApiResponse
-
-            if (!ensemblApiResponseJson) {
-		let errorText = `${ensemblApiResponseJson.error}`
-                //const unableToParseHGVSErrorMatch = errorText.match("Unable to parse HGVS notation")
-                //if (unableToParseHGVSErrorMatch) {
-                //    errorText = `Ensembl API is unable to parse the variant ${variant}: ${errorText}`
-                //}
-                const refAlleleErrorMatch = errorText.match(
-                    new RegExp("[(]([ACGTRYSWKMBDHVN]+)[)] does not match reference allele given by HGVS notation"))
-                if (refAlleleErrorMatch) {
-                    errorText = `${variant} has an unexpected reference allele. The hg${genomeVersion} reference allele should be ${refAlleleErrorMatch[1]}`
-                }
-
-                throw Error(errorText);
-            }
-
-            if (!ensemblApiResponseJson[0] || !ensemblApiResponseJson[0].vcf_string) {
-                throw Error(`Unexpected response: ${ensemblApiResponseJson}`);
-            }
-
-            variant = ensemblApiResponseJson[0].vcf_string
-            variantConsequence = ensemblApiResponseJson[0].most_severe_consequence
-            matchedRegExp = variant.match(VARIANT_RE)
-            if (!matchedRegExp) {
-                throw Error(`Unexpected response: ${ensemblApiResponseJson}`)
-            }
-
-            chrom = matchedRegExp[2].toUpperCase()
-            pos = parseInt(matchedRegExp[3])
-            ref = matchedRegExp[4].toUpperCase()
-            alt = matchedRegExp[5].toUpperCase()
-
-            result = {
-                'variant': `${chrom}-${pos}-${ref}-${alt}`,
-		'chrom': chrom,
-		'pos': pos,
-		'ref': ref,
-		'alt': alt,
-                'consequence': variantConsequence,
-            }
-            console.log("EnsemblAPI result:", result)
-
-            return result
-
+            ensemblApiResponse = await makeRequest(ensemblApiUrl + "?content-type=application/json&vcf_string=1")
         } catch (error) {
             console.error(error)
-            throw Error(error)
+            throw Error(`Ensembl API call failed: Unable to reach server`)
         }
+
+        ensemblApiResponseJson = await ensemblApiResponse
+
+        if (!ensemblApiResponseJson) {
+    let errorText = `${ensemblApiResponseJson.error}`
+            //const unableToParseHGVSErrorMatch = errorText.match("Unable to parse HGVS notation")
+            //if (unableToParseHGVSErrorMatch) {
+            //    errorText = `Ensembl API is unable to parse the variant ${variant}: ${errorText}`
+            //}
+            const refAlleleErrorMatch = errorText.match(
+                new RegExp("[(]([ACGTRYSWKMBDHVN]+)[)] does not match reference allele given by HGVS notation"))
+            if (refAlleleErrorMatch) {
+                errorText = `${variant} has an unexpected reference allele. The hg${genomeVersion} reference allele should be ${refAlleleErrorMatch[1]}`
+            }
+
+            throw Error(errorText);
+        }
+
+        if (!ensemblApiResponseJson[0] || !ensemblApiResponseJson[0].vcf_string) {
+            throw Error(`Unexpected response: ${ensemblApiResponseJson}`);
+        }
+
+        variant = ensemblApiResponseJson[0].vcf_string
+        variantConsequence = ensemblApiResponseJson[0].most_severe_consequence
+        matchedRegExp = variant.match(VARIANT_RE)
+        if (!matchedRegExp) {
+            throw Error(`Unexpected response: ${ensemblApiResponseJson}`)
+        }
+
+        chrom = matchedRegExp[2].toUpperCase()
+        pos = parseInt(matchedRegExp[3])
+        ref = matchedRegExp[4].toUpperCase()
+        alt = matchedRegExp[5].toUpperCase()
+
+        result = {
+            'variant': `${chrom}-${pos}-${ref}-${alt}`,
+            'chrom': chrom,
+            'pos': pos,
+            'ref': ref,
+            'alt': alt,
+            'consequence': variantConsequence,
+        }
+        console.log("EnsemblAPI result:", result)
+
+        return result
+
+    } catch (error) {
+        console.error(error)
+        throw Error(error)
+    }
 }
 
 function replaceCharAt(sequence, var_pos, ref, alt) {
