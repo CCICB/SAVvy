@@ -20,6 +20,10 @@ function updateFocusBP(value) {
     focus_bp = value; // Default to 0 if no branchpoints exist
 }
 
+function complement(a) {
+    return { A: 'T', T: 'A', G: 'C', C: 'G' }[a];
+}
+
 // Display all variants with basic api call
 // Hide gene-level view on initial load
 $( document ).ready(function() {
@@ -1482,7 +1486,6 @@ function selectBP(branchpoints) {
 
     $('.motif tr:nth-child(2) td').removeClass();
     tableCells.forEach(td => {
-        console.log(td.textContent.trim())
         if (td.textContent.trim() === variant_label) {
             td.classList.add("variant");
         }
@@ -1607,7 +1610,8 @@ async function fetchGenomeSequence(chromosome, start, end, buffer) {
         throw new Error('Failed to fetch genome sequence');
     }
     const data = await response.json();
-    return data.seq;
+    const sequence = data.seq;
+    return sequence.toUpperCase();
 }
 
 async function fetchAndDisplaySequence(variant) {
@@ -1631,10 +1635,17 @@ async function fetchAndDisplaySequence(variant) {
 		console.log("Closest End:", closestEnd);
 		console.log("Closest Start:", closestStart);
 		
-		const sequence = await fetchGenomeSequence(variant.chrom, closestEnd.end, closestStart.start, buffer-1)
-		const var_pos = variant.pos-closestEnd.end+buffer-1
-		const alt_sequence = replaceCharAt(sequence, var_pos, variant.ref, variant.alt);
-		parseSequence(alt_sequence.toUpperCase(), buffer, alt_sequence.length-buffer+1, var_pos)
+		var sequence = await fetchGenomeSequence(variant.chrom, closestEnd.end, closestStart.start, buffer-1)
+		var var_pos = variant.pos-closestEnd.end+buffer-1
+		var alt_sequence = replaceCharAt(sequence, var_pos, variant.ref, variant.alt);
+        
+        if (featureTranscript.strand == -1) {
+            sequence = sequence.split('').reverse().map(complement).join('');
+            alt_sequence = alt_sequence.split('').reverse().map(complement).join('');
+            var_pos = alt_sequence.length-var_pos-1;
+        }
+
+		parseSequence(alt_sequence, buffer, alt_sequence.length-buffer+1, var_pos)
 
 		$('#' + 'sequence-container').html("<div>" +
             `<h3>MANE Select Transcript: ${featureTranscript.id}</h3>` +
