@@ -1311,21 +1311,21 @@ function defineHeuristics(exonEnd, exonStart) {
     exonStart = exonStart - 1;
     exonEnd = exonEnd - 1;
     return [
-	{ range: [exonEnd - 2, exonEnd - 2], heuristic: ['DD12', 'DD3'] },
-	{ range: [exonEnd - 1, exonEnd - 1], heuristic: ['DD11', 'DD3'] },
-	{ range: [exonEnd - 0, exonEnd - 0], heuristic: ['DD7', 'DD4'] },
-	{ range: [exonEnd + 1, exonEnd + 2], heuristic: 'DD2' },
-	{ range: [exonEnd + 3, exonEnd + 3], heuristic: ['DD8', 'DD5'] },
-	{ range: [exonEnd + 4, exonEnd + 4], heuristic: ['DD10', 'DD5'] },
-	{ range: [exonEnd + 5, exonEnd + 5], heuristic: ['DD6', 'DD4'] },
-	{ range: [exonEnd + 6, exonEnd + 6], heuristic: 'DD9' },
-  	{ range: [exonStart - 24, exonStart - 5], heuristic: 'DA1' },
-  	{ range: [exonStart - 24, exonStart - 7], heuristic: 'DA9' },
-  	{ range: [exonStart - 2, exonStart - 1], heuristic: 'DA2' },
-  	{ range: [exonStart - 3, exonStart - 3], heuristic: ['DA3', 'DA4'] },
-  	{ range: [exonStart - 4, exonStart - 4], heuristic: 'DA8' },
-  	{ range: [exonStart - 6, exonStart - 5], heuristic: 'DA5' },
-  	{ range: [exonStart + 0, exonStart + 0], heuristic: ['DA3', 'DA6'] },
+        { range: [exonEnd - 2, exonEnd - 2], heuristic: ['DD12', 'DD3'] },
+        { range: [exonEnd - 1, exonEnd - 1], heuristic: ['DD11', 'DD3'] },
+        { range: [exonEnd - 0, exonEnd - 0], heuristic: ['DD7', 'DD4'] },
+        { range: [exonEnd + 1, exonEnd + 2], heuristic: 'DD2' },
+        { range: [exonEnd + 3, exonEnd + 3], heuristic: ['DD8', 'DD5'] },
+        { range: [exonEnd + 4, exonEnd + 4], heuristic: ['DD10', 'DD5'] },
+        { range: [exonEnd + 5, exonEnd + 5], heuristic: ['DD6', 'DD4'] },
+        { range: [exonEnd + 6, exonEnd + 6], heuristic: 'DD9' },
+        { range: [exonStart - 24, exonStart - 7], heuristic: 'DA9' },
+        { range: [exonStart - 2, exonStart - 1], heuristic: 'DA2' },
+        { range: [exonStart - 3, exonStart - 3], heuristic: ['DA4', 'DA3'] },
+        { range: [exonStart - 4, exonStart - 4], heuristic: 'DA8' },
+        { range: [exonStart - 6, exonStart - 5], heuristic: 'DA5' },
+        { range: [exonStart + 0, exonStart + 0], heuristic: ['DA6', 'DA3'] },
+        { range: [exonStart - 24, exonStart - 5], heuristic: 'DA1' },
     ];
 }
 
@@ -1390,6 +1390,13 @@ function parseSequence(sequenceInput, exonEnd, exonStart, variant) {
 	    // Highlight the variant location
         if (i == variant) {
             span.classList.add('variant');
+            const heuristics = getHeuristics(i, heuristicMap);
+            if (heuristics) {
+                populateHeuristics(heuristics);
+                $("#heuristics").prepend(`<h3>The following heuristics apply at position ${label}:</h3>`)
+            } else {
+                $("#heuristics").text(`<h3>No heuristics apply at position ${label}.</h3>`)
+            }
         }
 
         if (i - exonEnd >= -3 && i - exonEnd < 6) {
@@ -1463,11 +1470,11 @@ function selectBP(branchpoints) {
     let sequence = branchpoints[focus_bp]["0"]
     for (let i = 0; i < sequence.length; i++) {
     	if (i < bp_tds.length) { // Ensure we don't go beyond available <td> elements
-	    $(bp_tds[i]).removeClass();
-	    $(bp_tds[i]).addClass(sequence[i]); // Add class based on nucleotide
+            $(bp_tds[i]).removeClass();
+            $(bp_tds[i]).addClass(sequence[i]); // Add class based on nucleotide
             $(bp_tds[i]).text(sequence[i]); // Fill <td> with nucleotide
-	    $(bp_tds[i+5]).text(branchpoints[focus_bp]["label"]+i); // Fill <td> with nucleotide
-	}
+            $(bp_tds[i+5]).text(branchpoints[focus_bp]["label"]+i); // Fill <td> with nucleotide label
+        }
     }
 
     variant_label = String($('.variant.with-bar').data('content'))

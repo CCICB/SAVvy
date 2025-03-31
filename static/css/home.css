@@ -354,14 +354,14 @@ td .columns p {
 /* SAVVY */
 
 .sequence {
-display: flex; /* Prevents spans from wrapping */
-  flex-wrap: nowrap; /* Ensures they stay on one line */
-  overflow: hidden; /* Prevents overflowing content */
-  justify-content: center;
-  align-items: center;
-  padding: 20px 0 40px 0;
-  white-space: nowrap;
-  pointer-events: auto;  
+    display: flex; /* Prevents spans from wrapping */
+    flex-wrap: nowrap; /* Ensures they stay on one line */
+    overflow: hidden; /* Prevents overflowing content */
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0 70px 0;
+    white-space: nowrap;
+    pointer-events: auto;  
 }
 
 
