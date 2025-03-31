@@ -5,6 +5,78 @@
  
 }
 
+/* Header settings */
+.banner {
+    height: 400px;
+    background-position: center;
+}
+
+.banner div {
+    padding-top: 160px;
+}
+
+.banner .header {
+    color: white!important;
+    margin: 10px;
+}
+
+.ui.nav.container {
+    font-size: 1.2em;
+}
+
+.ui.sticky {
+    margin-top: 0!important;
+}
+
+.main.menu {
+    margin-top: 4em;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    transition:
+        box-shadow 0.5s ease,
+        padding 0.5s ease
+    ;
+}
+.main.menu .item img.logo {
+    margin-right: 1.5em!important;
+}
+
+.overlay {
+    float: left;
+    margin: 0em 3em 1em 0em;
+}
+
+.overlay .menu {
+    position: relative;
+    left: 0;
+    transition: left 0.5s ease;
+}
+
+.main.menu.fixed {
+    background-color: #FFFFFF;
+    border: 1px solid #DDD;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Page definitions */
+p, li, th, td {
+    font-size: medium;
+    line-height: 1.5em;
+}
+
+.ui.container h1 {
+    margin-top: 30px!important;
+}
+
+.checkbox {
+    margin-right: 20px;
+}
+
+footer {
+    height: 100px;
+}
+
 /* Terms of Use Styling */
 
 .terms {

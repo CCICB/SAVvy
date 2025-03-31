@@ -13,7 +13,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>SAVvy</title>
         <link rel="stylesheet" href="static/css/home.css">
-        <!-- <link rel="stylesheet" href="/static/css/home.css"> -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <link href="https://cdn.datatables.net/v/se/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/sb-1.6.0/sp-2.2.0/sl-1.7.0/datatables.min.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
@@ -24,33 +23,30 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
-        <link rel="icon" href="../src/logo.svg" type="image/svg+xml">
-        <link rel="stylesheet" href="../style.css">
+        <link rel="icon" href="static/favicon.svg" type="image/svg+xml">
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.css">
         <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js"></script>
-	    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
-	    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js"></script> -->
     </head>
     <body>
 	<div class="overflowing pusher">
 	    <div class="ui borderless main menu sticky">
             <div class="ui nav container">
 		        <div class="header"><a class="item">
-           	        <img style="height: 40px; width: 40px;" class="logo" src="splicevardb.png">
+           	        <img style="height: 40px; width: 40px;" class="logo" src="static/splicevardb.png">
 		            <b>SAVvy</b></a>
 		        </div>
                 <a id="TOU_pull" class="item">Register</a>
                 <a id="Login_pull" class="item">Sign in</a>
                 <a href="https://compbio.ccia.org.au/splicevardb-api/doc/" target="_blank" class="item">API</a>
                 <a id="Submit_pull" class="item">Submit Variants</a>
-                <a class="item" href="https://doi.org/10.1016/j.ajhg.2024.08.002" target="_blank">Publication</a>
+                <a class="item" href="https://doi.org/10.1016/j.ajhg.2025.02.012" target="_blank">Publication</a>
                 <a href="https://compbio.ccia.org.au" target="_blank" class="item">Lab Home</a>
             </div>
     	</div>
 	
         <div class="ui fluid container content">
             <div style="position: relative">
-                <h1 class="ui header" style="margin: 0 !important">Savvy</h1>
+                <h1 class="ui header" style="margin: 0 !important">SAVvy</h1>
 		        <div id="buildToggle_buttons" class="ui buttons" style="display: none; position: absolute; right: 0; top: 0;" >
                     <button id="hg38_toggle" onclick="buildToggle('hg38')" class="ui button">hg38</button>
                     <div class="or"></div>
