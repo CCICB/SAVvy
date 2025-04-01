@@ -117,19 +117,8 @@ footer {
     align-items: center;
 }
 
-#lollipop_placeholder {
-    display: block;
-    text-align: center;
-    margin: 10px auto;
-}
-
 .buttons.field button {
     margin-bottom: 1em !important;
-}
-
-/* ProteinPaint edits */
-.sjpp-dshandleholder, .sja_handle_green {
-    display: none !important;
 }
 
 td .columns {
@@ -150,7 +139,6 @@ td .columns p {
     padding: 5px;
 }
 
-
 .clinvar h5 {
     text-align: center;
     margin: 0px !important;
@@ -158,21 +146,20 @@ td .columns p {
 }
 
 /* Stars for ClinVar*/
-
 :root {
-  --star-size: 30px;
-  --star-color: white;
-  --star-background: gold;
+    --star-size: 30px;
+    --star-color: white;
+    --star-background: gold;
 }
 
 .clinvar-star {
-  --percent: calc(var(--rating) / 4 * 100%);
-  display: block;
-  font-size: var(--star-size);
-  font-family: Times;
-  line-height: 1;
-  margin: 0 auto;
-  width: 129px;
+    --percent: calc(var(--rating) / 4 * 100%);
+    display: block;
+    font-size: var(--star-size);
+    font-family: Times;
+    line-height: 1;
+    margin: 0 auto;
+    width: 129px;
 }
 
 .clinvar-star::before {
@@ -251,13 +238,11 @@ td .columns p {
 }
 
 /* Table Styling */
-
 #DataTables_Table_0 {
     width: 100% !important;
 }
 
 /* Table Footer Styling */
-
 .dataTables_paginate {
     display: inline-flex;
     float: right;
@@ -333,13 +318,11 @@ td .columns p {
 }
 
 /* Table Styling */
-
 #DataTables_Table_0 {
     width: 100% !important;
 }
 
 /* Table Footer Styling */
-
 .dataTables_paginate {
     display: inline-flex;
     float: right;
@@ -361,8 +344,11 @@ td .columns p {
     margin-right: 0.5em !important;
 }
 
+
+
 /* SAVVY */
 
+/* Sequence viewer */
 .sequence {
     display: flex; /* Prevents spans from wrapping */
     flex-wrap: nowrap; /* Ensures they stay on one line */
@@ -374,130 +360,130 @@ td .columns p {
     pointer-events: auto;  
 }
 
-
 #output span {
-      width: auto !important;
-      display: inline-block;
-      position: relative;
-      transition: font-size 0.2s ease;
-      font-size: var(--font-size, 25px);
-      box-sizing: content-box;
-      white-space: nowrap;
-      margin: 0;
-      padding: 0;
-      font-family: monospace;
-      border: none;
-      z-index: 10;
-      pointer-events: auto;
-    }
+    width: auto !important;
+    display: inline-block;
+    position: relative;
+    transition: font-size 0.2s ease;
+    font-size: var(--font-size, 25px);
+    box-sizing: content-box;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    font-family: monospace;
+    border: none;
+    z-index: 10;
+    pointer-events: auto;
+}
 
 .nucleotide::before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 40px; /* Position the line below the text */
-      left: 0;
-      width: 100%;
-      height: 2px; /* Line height for introns */
-      background-color: black; /* Line color */
-      z-index: 1;    
+    content: '';
+    display: block;
+    position: absolute;
+    top: 40px; /* Position the line below the text */
+    left: 0;
+    width: 100%;
+    height: 2px; /* Line height for introns */
+    background-color: black; /* Line color */
+    z-index: 1;    
 }
 
 .nucleotide.chevron::after {
-      content: '\276F';
-      display: block;
-      color: black;
-      position: absolute;
-      top: 31px; /* Position the line below the text */
-      font-size: 14px;
-      left: 0;
-      z-index: 1;
+    content: '\276F';
+    display: block;
+    color: black;
+    position: absolute;
+    top: 31px; /* Position the line below the text */
+    font-size: 14px;
+    left: 0;
+    z-index: 1;
 }
 
 .nucleotide.exon::before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 35px; /* Position the line below the text */
-      left: 0;
-      width: 100%;
-      height: 12px; /* Line height for introns */
-      background-color: black; /* Line color */
-      z-index: 1;
+    content: '';
+    display: block;
+    position: absolute;
+    top: 35px; /* Position the line below the text */
+    left: 0;
+    width: 100%;
+    height: 12px; /* Line height for introns */
+    background-color: black; /* Line color */
+    z-index: 1;
 }
 
 /* Base styles for the bar */
 .nucleotide.with-bar::after {
-  content: '';
-  top: 29px;
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 24px; /* Thickness of the bar */
+    content: '';
+    top: 29px;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 24px; /* Thickness of the bar */
 }
 
 /* Role-specific colors */
 .nucleotide.donor.with-bar::after {
-  background-color: #feaa92; /* Donor color */
+    background-color: #feaa92; /* Donor color */
 }
 
 .nucleotide.branchpoint.with-bar::after {
-  background-color: #ace2f5; /* Branchpoint color */
+    background-color: #ace2f5; /* Branchpoint color */
 }
 
 .nucleotide.acceptor.with-bar::after {
-  background-color: #eceaae; /* Acceptor color */
+    background-color: #eceaae; /* Acceptor color */
 }
 
 .nucleotide.variant.with-bar::after {
-  background-color: red; /* Variant color */
-  opacity: 1;
+    background-color: red; /* Variant color */
+    opacity: 1;
 }
 
 .reduced-opacity::after {
-  opacity: 0.4;
+    opacity: 0.4;
 }
 
 td.variant {
-  color: red; /* Variant color */
-  border-bottom: 5px solid red !important;
+    color: red; /* Variant color */
+    border-bottom: 5px solid red !important;
+}
+	
+.A {
+    color: green;
 }
 
-	
-    .A {
-      color: green;
-    }
+.T {
+    color: red;
+}
 
-    .T {
-      color: red;
-    }
+.G {
+    color: blue;
+}
 
-    .G {
-      color: blue;
-    }
+.C {
+    color: orange;
+}
 
-    .C {
-      color: orange;
-    }
+.ui.attached.segment {
+    padding: 1em 0.5em;
+}
 
-    .ui.attached.segment {
-      padding: 1em 0.5em;
-    }
 
-    .motif.table tr td {
-      padding: 0 !important;
-      overflow: visible !important;
-    }
+/* Motif zoom boxes*/
+.motif.table tr td {
+    padding: 0 !important;
+    overflow: visible !important;
+}
 
-    .motif.table tr:nth-child(2) {
-      color: grey;
-    }
+.motif.table tr:nth-child(2) {
+    color: grey;
+}
 
-    .motif.table tr:nth-child(1) td {
-      cursor: pointer;
-      font-size: x-large;
-      transform: scaleY(1.5); /* Scale height to 200% */
-      transform-origin: center; /* Ensure scaling happens from the center */
+.motif.table tr:nth-child(1) td {
+    cursor: pointer;
+    font-size: x-large;
+    transform: scaleY(1.5); /* Scale height to 200% */
+    transform-origin: center; /* Ensure scaling happens from the center */
 }
 
 .motif.table tr:nth-child(2) td {
@@ -508,16 +494,17 @@ td.variant {
     border: none !important;
 }
 
-        .heuristic {
-      margin-top: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background: #f9f9f9;
-    }
+/* Heuristics display */
+.heuristic {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
 
-    .heuristic img {
-      max-width: 1000px;
-      display: block;
-      margin: 10px 0;
-    }
+.heuristic img {
+    max-width: 1000px;
+    display: block;
+    margin: 10px 0;
+}
