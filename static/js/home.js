@@ -157,11 +157,6 @@ function buildToggle(version) {
                 hg19_column.visible(true);
         }
     }
-    
-    if ($('#lollipop').is(':visible')) {
-        document.getElementById('lollipop').style.display = "none";
-        populateProteinPaint();
-    }
 }
 
 function displayLoader() {
@@ -177,7 +172,6 @@ function displayLoader() {
             $('#results').dimmer('hide');
             $('#results .dimmer').empty();
             clearInterval(displayLoaderCheck);
-            populateProteinPaint();
         }
     },500);
 }
@@ -531,75 +525,6 @@ function fetchTableVariants(column) {
     }
 }
 
-function populateProteinPaint(initial_data) {
-    table_data = fetchTableVariants();
-    // Runs ProteinPaint if only one gene is left from filtering
-    let uniqueGenes = uniqueValues("gene_symbol_list", "filtered");
-    
-    var mutationReplace = setInterval(function() {
- 	if ($('.sja_simpletable').length) {
-	    if ($('.sja_simpletable tr:nth-child(2) td:nth-child(1)').text() == "Mutation") {
-		$('.sja_simpletable tr:nth-child(2) td:nth-child(1)').text('Variant');
-	    }
-	}
-    }, 100); // check every 100ms
-
-    if (uniqueGenes[0].length == 1) {
-        if ( ($('#lollipop').filter(':hidden')) & ($('#gene_plot .dimmer').filter(':hidden')) ) {
-            generateProteinPaint(table_data, uniqueGenes[0][0]);
-        } else {
-            if ( JSON.stringify(table_data) !== JSON.stringify(initial_data) ) {
-                generateProteinPaint(table_data, uniqueGenes[0][0]);
-            }
-        }
-    } else if (uniqueGenes[1].length > 0 && $("#geneFilter").val()) {
-	    if ( $("#geneFilter").val().length == 1 ) {
-            if ( ($('#lollipop').filter(':hidden')) & ($('#gene_plot .dimmer').filter(':hidden')) ) {
-                generateProteinPaint(table_data, $("#geneFilter").val()[0]);
-            } else {
-                if ( JSON.stringify(table_data) !== JSON.stringify(initial_data) ) {
-                    generateProteinPaint(table_data, $("#geneFilter").val()[0]);
-                }
-            }
-        } else {
-            clearInterval(mutationReplace);
-	    $('#gene_plot').dimmer('hide');
-            $('#gene_plot .dimmer').empty();
-            document.getElementById('lollipop').style.display = "none";
-            document.getElementById('lollipop_placeholder').style.display = "block";
-        }
-    } else {
-	clearInterval(mutationReplace);
-        $('#gene_plot').dimmer('hide');
-        $('#gene_plot .dimmer').empty();
-	document.getElementById('lollipop').style.display = "none";
-        document.getElementById('lollipop_placeholder').style.display = "block";
-    }
-    // Recall function every 2 seconds with previous data as a comparison
-    setTimeout(function() { populateProteinPaint(table_data) }, 2000);
-}
-
-function proteinPaintLoad() {
-    $("#gene_plot").dimmer('show');
-    $('#gene_plot .dimmer').addClass('inverted');
-    $('#gene_plot .dimmer').append('<div class="ui text loader">Loading Visualisation</div>');
-
-    var ppLoadCheck = window.setInterval(function(){
-        if ($('.sja_skg').length) {
-            $('#gene_plot').dimmer('hide');
-            $('#gene_plot .dimmer').empty();
-            $('.sja_Block_div').css({"margin":"0","width":"100%"});
-            $('.sja_Block_div').children().eq(1).css("width","100%");
-            $('.sja_Block_div').children().eq(1).children().eq(0).children().eq(0).attr('transform', 'translate(40,0)');	
-            document.getElementsByClassName('sja_Block_div').item(0).children.item(3).style.display = "none";
-            $('#lollipop').show();
-            clearInterval(ppLoadCheck);
-        } else if ($('#gene_plot .dimmer').is(':empty')) {
-            clearInterval(ppLoadCheck);	
-        }
-    },500);
-}
-
 async function variantSubmit() {
     const file = $("input[name=templateFile]").prop('files')[0];
     const additionalFile = $("input[name=suppInfo]").prop('files')[0];
@@ -782,7 +707,6 @@ async function useFilter(genes,validations,classifications) {
     datatable.clear().draw();
     datatable.rows.add(newVariants); // Add new data
     datatable.columns.adjust().draw(); // Redraw the DataTable
-    // populateProteinPaint(fetchTableVariants());
 }
 
 // Get unique values from table
@@ -1117,85 +1041,6 @@ function formatIGV(row) {
     };
     igv.createBrowser(igvDiv, options)
 };
-
-
-// proteinPaint Plot
-function generateProteinPaint(data, gene) {
-    document.getElementById('lollipop_placeholder').style.display = "none";
-    $('#lollipop').empty();
-    $('.sja_menu_div').remove();
-    if (gene === '') {
-        return;
-    }
-    proteinPaintLoad();
-    let proteinPaintData = convert_to_protein_paint(data);
-    runproteinpaint({
-         noheader:1,
-         holder: document.getElementById('lollipop'),
-         parseurl:true,
-         nobox:1,
-         genome: genome_build,
-         gene: gene,
-         mclassOverride: {
-             className: 'Classification',
-             classes: {
-                 S: {
-                     label: 'Splice-altering',
-                     color: '#db3d3d'
-                 },
-                 L: {
-                     label: 'Low-frequency',
-                     color: '#8052a0'
-                 },
-                 N: {
-                     label: 'Normal',
-                     color: '#3987cc'
-                 },
-		 X: {
-		     label: 'Conflicting',
-		     color: '#808080'
-		 }
-             }
-        },
-        tracks:[{
-            type:'mds3',
-            name:'SpliceVarDB',
-            custom_variants: JSON.parse(JSON.stringify(proteinPaintData)),
-        }]
-    });
-    var proteinPaintLabelReplace = setInterval(function() {
-        if ($('div.sja_Block_div').length) {
-	    $('div.sja_Block_div div:nth-child(2) svg g:nth-child(1) g:nth-child(4) g:nth-child(2) g:nth-child(3)').remove();
-            clearInterval(proteinPaintLabelReplace);
-	}
-    }, 100); // check every 100ms
-};
-
-function convert_to_protein_paint(snv) {
-    let result = [];
-    snv.forEach(function (variant, index) {
-	if (genome_build == "hg19") {
-	    var variant_pos = variant.pos_hg19;
-        } else if (genome_build == "hg38") {
-            var variant_pos = variant.pos_hg38;
-        }
-	
-        // Extract the first letter of the classification to use for the class
-        let classifier = variant.classification.charAt(0).replace("C", "X");
-        plot_item = {
-            'dt': 1,
-	    //'mname': variant.hgvs_RefSeq.split(":")[1],
-            'gene': variant.gene_symbol_list,
-            'chr': "chr" + variant.chr,
-            'pos': Number(variant_pos),
-            'ref': variant.ref,
-            'alt': variant.alt,
-            'class': classifier
-        }
-        result.push(plot_item);
-    });
-    return result;
-}
 
 function formatChild(d, row) {
     return (

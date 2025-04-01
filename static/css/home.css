@@ -77,6 +77,16 @@ footer {
     height: 100px;
 }
 
+.ui.button.cci_green {
+    background-color: #00965c!important;
+    color: white;
+}
+
+.ui.button.cci_green:hover {
+    background-color: #00574f!important;
+    color: white;
+}
+
 /* Terms of Use Styling */
 
 .terms {
