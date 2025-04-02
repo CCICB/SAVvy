@@ -1537,8 +1537,8 @@ async function fetchAndDisplaySequence(variant) {
                     "<tr>" +
                         `<td class='ui left aligned'>Additional AG</td>` +
                         `<td>=0</td>` +
-                        `<td></td>` +
-                        `<td></td>` +
+                        `<td>${ref.AGEZ}</td>` +
+                        `<td>${alt.AGEZ}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>Intron length</td>` +
@@ -1549,8 +1549,8 @@ async function fetchAndDisplaySequence(variant) {
                     "<tr>" +
                         `<td class='ui left aligned'>Branchpoint to AG</td>` +
                         `<td>≥17</td>` +
-                        `<td></td>` +
-                        `<td></td>` +
+                        `<td>${ref.bpDistance}</td>` +
+                        `<td>${alt.bpDistance}</td>` +
                     "</tr>" +
                 "</tbody>" +
             "</table>" +
@@ -1566,10 +1566,42 @@ async function fetchAndDisplaySequence(variant) {
 function requirements(sequence) {
     const req = {};
     
-    req.intronLength = sequence.length-buffer*2;
+    // Count "AG" in c.x-13 to c.x-6 (A of AG within cooordinate window)
+    // TODO: Count "AG" in full AGEZ window using branchpoint location
+    const AGEZ_seq = sequence.substring(sequence.length-buffer-13, sequence.length-buffer-4);
+    req.AGEZ = (AGEZ_seq.match(/AG/g)||[]).length;
 
+    // Count Ts and Cs in c.x-24 to c.x-5 (inclusive)
     const ppt_seq = sequence.substring(sequence.length-buffer-24, sequence.length-buffer-4);
     req.pptCount = (ppt_seq.match(/T|C/g)||[]).length;
+
+    // Get intron length from input sequence (minus buffer)
+    req.intronLength = sequence.length-buffer*2;
+
+    // Get any branchpoint < 50bps from exon start
+    const bp_seq = sequence.substring(sequence.length-buffer-52, sequence.length-buffer-4);
+    const bp = findBranchpoint(bp_seq, sequence.length-buffer-52);
+
+    if (bp.length === 0) {
+        // No branchpoints
+        req.bpDistance = 0;
+        req.bpDistanceLowest = 0;
+    } else {
+        // Only return values within region
+        let return_bp = bp.filter(t => typeof t.label === 'number' && t.label <= -20);
+        if (return_bp.length === 0) {
+            return_bp = bp;
+        }
+
+        const labels = return_bp
+            .filter(t => typeof t.label === 'number')
+            .map(t => -t.label -3);
+        
+        req.bpDistanceLowest = Math.min(...labels);
+        req.bpDistance = labels.join(', ');
+
+        console.log(req.bpDistanceLowest);
+    }
 
     return req;
 }
