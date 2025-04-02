@@ -2,7 +2,7 @@
     .ui.ui.ui.container.fluid {
         padding: 0px 30px;
         margin-left: auto;
- 
+    }
 }
 
 /* Header settings */
@@ -289,62 +289,6 @@ td .columns p {
 .igv-gear-menu-column > div {
     background-color: rgba(0,0,0,0) !important;
 }
-
-/* Table Header Styling */
-.dataTables_filter {
-    margin-bottom: 1em;
-    float: right;
-    display: inline-block;
-}
-
-#filters {
-    display: inline-block;
-    min-width: calc(100% - 280px);
-}
-
-.filter .dropdown .menu .item {
-    font-style: italic;
-}
-
-.filter .dropdown a {
-    font-style: italic;
-}
-
-.dtsb-search {
-    margin: 0 !important;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-}
-
-/* Table Styling */
-#DataTables_Table_0 {
-    width: 100% !important;
-}
-
-/* Table Footer Styling */
-.dataTables_paginate {
-    display: inline-flex;
-    float: right;
-    margin-top: 1em;
-}
-
-.dataTables_info {
-    display: inline-flex;
-    padding: 0;
-    margin-top: 1em;
-}
-
-.dt-buttons {
-    display: block !important;
-    clear: both;
-}
-
-.dt-buttons button {
-    margin-right: 0.5em !important;
-}
-
-
 
 /* SAVVY */
 
