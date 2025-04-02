@@ -24,6 +24,8 @@ function complement(a) {
     return { A: 'T', T: 'A', G: 'C', C: 'G' }[a];
 }
 
+const buffer = 5;
+
 // Display all variants with basic api call
 // Hide gene-level view on initial load
 $( document ).ready(function() {
@@ -1448,8 +1450,9 @@ async function fetchFeature(feature, chromosome, start, end) {
     return data;
 }
 
-async function fetchGenomeSequence(chromosome, start, end, buffer) {
-    const url = `https://rest.ensembl.org/sequence/region/human/${chromosome}:${start-buffer}..${end+buffer}?content-type=application/json`;
+async function fetchGenomeSequence(chromosome, start, end) {
+    const seq_buffer = buffer-1;
+    const url = `https://rest.ensembl.org/sequence/region/human/${chromosome}:${start-seq_buffer}..${end+seq_buffer}?content-type=application/json`;
     const response = await fetch(url);
     if (!response.ok) {
         throw new Error('Failed to fetch genome sequence');
@@ -1460,7 +1463,6 @@ async function fetchGenomeSequence(chromosome, start, end, buffer) {
 }
 
 async function fetchAndDisplaySequence(variant) {
-    const buffer = 5;
     try {
 		const transcripts = await fetchFeature('transcript', variant.chrom, variant.pos, variant.pos);
         const maneSelectTranscript = transcripts.find(t => t.tag && t.tag.includes("MANE_Select"));
@@ -1480,7 +1482,7 @@ async function fetchAndDisplaySequence(variant) {
 		console.log("Closest End:", closestEnd);
 		console.log("Closest Start:", closestStart);
 		
-		var sequence = await fetchGenomeSequence(variant.chrom, closestEnd.end, closestStart.start, buffer-1)
+		var sequence = await fetchGenomeSequence(variant.chrom, closestEnd.end, closestStart.start)
 		var var_pos = variant.pos-closestEnd.end+buffer-1
 		var alt_sequence = replaceCharAt(sequence, var_pos, variant.ref, variant.alt);
         
@@ -1492,57 +1494,60 @@ async function fetchAndDisplaySequence(variant) {
 
 		parseSequence(alt_sequence, buffer, alt_sequence.length-buffer+1, var_pos)
 
+        const ref = requirements(sequence);
+        const alt = requirements(alt_sequence);
+
 		$('#' + 'sequence-container').html("<div>" +
             `<h3>MANE Select Transcript: ${featureTranscript.id}</h3>` +
 		    `<p>Exons in region: ${closestEnd.rank} - ${closestStart.rank}</p>` +
 		    `<p>Sequence for region: ${variant.chrom}:${closestEnd.end}-${closestStart.start}</p>` +
 		    `<p style="overflow: scroll;">${sequence}</p>` +
-            "<table id='requirements' class='ui table'>" +
+            "<table id='requirements' class='ui center aligned table'>" +
                 "<thead><tr>" +
-                    "<th>Metric</th>" +
+                    "<th class='ui left aligned'>Metric</th>" +
                     "<th>Required Value</th>" +
                     "<th>REF Sequence</th>" +
                     "<th>ALT Sequence</th>" +
                 "</tr></thead>" +
                 "<tbody>" +
                     "<tr>" +
-                        `<td>5\`SS MaxEntScan</td>` +
+                        `<td class='ui left aligned'>5\`SS MaxEntScan</td>` +
                         `<td>≥1.45</td>` +
                         `<td></td>` +
                         `<td></td>` +
                     "</tr>" +
                     "<tr>" +
-                        `<td>3\`SS MaxEntScan</td>` +
+                        `<td class='ui left aligned'>3\`SS MaxEntScan</td>` +
                         `<td>≥1.38</td>` +
                         `<td></td>` +
                         `<td></td>` +
                     "</tr>" +
                     "<tr>" +
-                        `<td>Total MaxEntScan</td>` +
+                        `<td class='ui left aligned'>Total MaxEntScan</td>` +
                         `<td>≥7.41</td>` +
                         `<td></td>` +
                         `<td></td>` +
                     "</tr>" +
                     "<tr>" +
-                        `<td>Number Ts and Cs</td>` +
+                        `<td class='ui left aligned'>Number Ts and Cs</td>` +
                         `<td>≥9</td>` +
-                        `<td></td>` +
-                        `<td></td>` +
+                        `<td>${ref.pptCount}</td>` +
+                        `<td>${alt.pptCount}</td>` +
                     "</tr>" +
                     "<tr>" +
-                        `<td>Additional AG</td>` +
+                        `<td class='ui left aligned'>Additional AG</td>` +
                         `<td>=0</td>` +
                         `<td></td>` +
                         `<td></td>` +
                     "</tr>" +
                     "<tr>" +
-                        `<td>Intron length</td>` +
+                        `<td class='ui left aligned'>Intron length</td>` +
                         `<td>≥80</td>` +
-                        `<td></td>` +
-                        `<td></td>` +
+                        `<td>${ref.intronLength}</td>` +
+                        `<td>${alt.intronLength}</td>` +
                     "</tr>" +
                     "<tr>" +
-                        `<td>Branchpoint to AG</td>` +
+                        `<td class='ui left aligned'>Branchpoint to AG</td>` +
                         `<td>≥17</td>` +
                         `<td></td>` +
                         `<td></td>` +
@@ -1557,6 +1562,18 @@ async function fetchAndDisplaySequence(variant) {
         document.getElementById('sequence-container').textContent = 'Error fetching sequence.';
     }
 }
+
+function requirements(sequence) {
+    const req = {};
+    
+    req.intronLength = sequence.length-buffer*2;
+
+    const ppt_seq = sequence.substring(sequence.length-buffer-24, sequence.length-buffer-4);
+    req.pptCount = (ppt_seq.match(/T|C/g)||[]).length;
+
+    return req;
+}
+
 
 async function parseVariant() {
 	const variant = $("#variant").val().trim()
