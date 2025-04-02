@@ -1497,6 +1497,58 @@ async function fetchAndDisplaySequence(variant) {
 		    `<p>Exons in region: ${closestEnd.rank} - ${closestStart.rank}</p>` +
 		    `<p>Sequence for region: ${variant.chrom}:${closestEnd.end}-${closestStart.start}</p>` +
 		    `<p style="overflow: scroll;">${sequence}</p>` +
+            "<table id='requirements' class='ui table'>" +
+                "<thead><tr>" +
+                    "<th>Metric</th>" +
+                    "<th>Required Value</th>" +
+                    "<th>REF Sequence</th>" +
+                    "<th>ALT Sequence</th>" +
+                "</tr></thead>" +
+                "<tbody>" +
+                    "<tr>" +
+                        `<td>5\`SS MaxEntScan</td>` +
+                        `<td>≥1.45</td>` +
+                        `<td></td>` +
+                        `<td></td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td>3\`SS MaxEntScan</td>` +
+                        `<td>≥1.38</td>` +
+                        `<td></td>` +
+                        `<td></td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td>Total MaxEntScan</td>` +
+                        `<td>≥7.41</td>` +
+                        `<td></td>` +
+                        `<td></td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td>Number Ts and Cs</td>` +
+                        `<td>≥9</td>` +
+                        `<td></td>` +
+                        `<td></td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td>Additional AG</td>` +
+                        `<td>=0</td>` +
+                        `<td></td>` +
+                        `<td></td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td>Intron length</td>` +
+                        `<td>≥80</td>` +
+                        `<td></td>` +
+                        `<td></td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td>Branchpoint to AG</td>` +
+                        `<td>≥17</td>` +
+                        `<td></td>` +
+                        `<td></td>` +
+                    "</tr>" +
+                "</tbody>" +
+            "</table>" +
             "</div>")
 
 	} catch (error) {

@@ -292,6 +292,11 @@ td .columns p {
 
 /* SAVVY */
 
+/* Requirements table */
+#requirements td,  #requirements th {
+    line-height: 1em;
+}
+
 /* Sequence viewer */
 .sequence {
     display: flex; /* Prevents spans from wrapping */
