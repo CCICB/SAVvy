@@ -612,6 +612,9 @@ filterVariants = async (payload) =>
 downloadVariants = async (payload, token) =>
     makeRequest(`${splicevardbAPI}/variants/download`, 'POST', payload)
 
+getMaxEntScan = async (payload) =>
+    makeRequest(`${splicevardbAPI}/maxentscan/`, "POST", payload);
+
 // Basic API call
 function call_api() {
     makeRequest(`${splicevardbAPI}/variants/filter`, 'POST', {
@@ -1494,8 +1497,8 @@ async function fetchAndDisplaySequence(variant) {
 
 		parseSequence(alt_sequence, buffer, alt_sequence.length-buffer+1, var_pos)
 
-        const ref = requirements(sequence);
-        const alt = requirements(alt_sequence);
+        const ref = await requirements(sequence);
+        const alt = await requirements(alt_sequence);
 
 		$('#' + 'sequence-container').html("<div>" +
             `<h3>MANE Select Transcript: ${featureTranscript.id}</h3>` +
@@ -1513,20 +1516,20 @@ async function fetchAndDisplaySequence(variant) {
                     "<tr>" +
                         `<td class='ui left aligned'>5\`SS MaxEntScan</td>` +
                         `<td>≥1.45</td>` +
-                        `<td></td>` +
-                        `<td></td>` +
+                        `<td>${ref.MES5}</td>` +
+                        `<td>${alt.MES5}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>3\`SS MaxEntScan</td>` +
                         `<td>≥1.38</td>` +
-                        `<td></td>` +
-                        `<td></td>` +
+                        `<td>${ref.MES3}</td>` +
+                        `<td>${alt.MES3}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>Total MaxEntScan</td>` +
                         `<td>≥7.41</td>` +
-                        `<td></td>` +
-                        `<td></td>` +
+                        `<td>${ref.MESTotal}</td>` +
+                        `<td>${alt.MESTotal}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>Number Ts and Cs</td>` +
@@ -1563,9 +1566,16 @@ async function fetchAndDisplaySequence(variant) {
     }
 }
 
-function requirements(sequence) {
+async function requirements(sequence) {
     const req = {};
     
+    // Get MaxEntScan Scores (maxentpy ingested into API)
+    const donor_seq = sequence.substring(buffer-3, buffer+6);
+    const acceptor_seq = sequence.substring(sequence.length-buffer-20, sequence.length-buffer+3);
+    req.MES5 = await MaxEntScan(donor_seq, 5);
+    req.MES3 = await MaxEntScan(acceptor_seq, 3);
+    req.MESTotal = req.MES3 + req.MES5;
+
     // Count "AG" in c.x-13 to c.x-6 (A of AG within cooordinate window)
     // TODO: Count "AG" in full AGEZ window using branchpoint location
     const AGEZ_seq = sequence.substring(sequence.length-buffer-13, sequence.length-buffer-4);
@@ -1606,6 +1616,18 @@ function requirements(sequence) {
     return req;
 }
 
+// Use API to get MaxEntScan score
+async function MaxEntScan(sequence, site) {
+    
+    const result = await getMaxEntScan({
+        sequence: sequence,
+        score: site
+    });
+    const rounded = Math.round(result.result*100)/100;
+    
+    return rounded
+}
+      
 
 async function parseVariant() {
 	const variant = $("#variant").val().trim()
