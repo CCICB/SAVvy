@@ -77,6 +77,10 @@ footer {
     height: 100px;
 }
 
+i.cci_green {
+    color: #00965c!important;
+}
+
 .ui.button.cci_green {
     background-color: #00965c!important;
     color: white;
@@ -291,6 +295,19 @@ td .columns p {
 }
 
 /* SAVVY */
+
+/* Requirements table */
+#requirements td,  #requirements th {
+    line-height: 1em;
+}
+
+#requirements>tbody>tr>td {
+    padding: .5em .5em;
+}
+
+#varInfo>div {
+    margin: 10px;
+}
 
 /* Sequence viewer */
 .sequence {

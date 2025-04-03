@@ -24,6 +24,8 @@ function complement(a) {
     return { A: 'T', T: 'A', G: 'C', C: 'G' }[a];
 }
 
+const buffer = 5;
+
 // Display all variants with basic api call
 // Hide gene-level view on initial load
 $( document ).ready(function() {
@@ -609,6 +611,9 @@ filterVariants = async (payload) =>
 
 downloadVariants = async (payload, token) =>
     makeRequest(`${splicevardbAPI}/variants/download`, 'POST', payload)
+
+getMaxEntScan = async (payload) =>
+    makeRequest(`${splicevardbAPI}/maxentscan/`, "POST", payload);
 
 // Basic API call
 function call_api() {
@@ -1448,8 +1453,9 @@ async function fetchFeature(feature, chromosome, start, end) {
     return data;
 }
 
-async function fetchGenomeSequence(chromosome, start, end, buffer) {
-    const url = `https://rest.ensembl.org/sequence/region/human/${chromosome}:${start-buffer}..${end+buffer}?content-type=application/json`;
+async function fetchGenomeSequence(chromosome, start, end) {
+    const seq_buffer = buffer-1;
+    const url = `https://rest.ensembl.org/sequence/region/human/${chromosome}:${start-seq_buffer}..${end+seq_buffer}?content-type=application/json`;
     const response = await fetch(url);
     if (!response.ok) {
         throw new Error('Failed to fetch genome sequence');
@@ -1460,7 +1466,6 @@ async function fetchGenomeSequence(chromosome, start, end, buffer) {
 }
 
 async function fetchAndDisplaySequence(variant) {
-    const buffer = 5;
     try {
 		const transcripts = await fetchFeature('transcript', variant.chrom, variant.pos, variant.pos);
         const maneSelectTranscript = transcripts.find(t => t.tag && t.tag.includes("MANE_Select"));
@@ -1480,7 +1485,7 @@ async function fetchAndDisplaySequence(variant) {
 		console.log("Closest End:", closestEnd);
 		console.log("Closest Start:", closestStart);
 		
-		var sequence = await fetchGenomeSequence(variant.chrom, closestEnd.end, closestStart.start, buffer-1)
+		var sequence = await fetchGenomeSequence(variant.chrom, closestEnd.end, closestStart.start)
 		var var_pos = variant.pos-closestEnd.end+buffer-1
 		var alt_sequence = replaceCharAt(sequence, var_pos, variant.ref, variant.alt);
         
@@ -1492,12 +1497,84 @@ async function fetchAndDisplaySequence(variant) {
 
 		parseSequence(alt_sequence, buffer, alt_sequence.length-buffer+1, var_pos)
 
+        const ref = await requirements(sequence);
+        const alt = await requirements(alt_sequence);
+
 		$('#' + 'sequence-container').html("<div>" +
-            `<h3>MANE Select Transcript: ${featureTranscript.id}</h3>` +
-		    `<p>Exons in region: ${closestEnd.rank} - ${closestStart.rank}</p>` +
-		    `<p>Sequence for region: ${variant.chrom}:${closestEnd.end}-${closestStart.start}</p>` +
-		    `<p style="overflow: scroll;">${sequence}</p>` +
+            `<h3 class='ui header'>Splicing Requirements</h3>` +
+            `<p>The following requirements define the sequence, spacing, and motif strength required for splicing. 95.9% of U2 introns satisfy all criteria.</p>` +
+            "<table id='requirements' class='ui center aligned table'>" +
+                "<thead><tr>" +
+                    "<th class='ui left aligned'>Variant Information</th>" +
+                    "<th class='ui left aligned'>Metric</th>" +
+                    "<th>Required Value</th>" +
+                    "<th>REF Sequence</th>" +
+                    "<th>ALT Sequence</th>" +
+                "</tr></thead>" +
+                "<tbody>" +
+                    "<tr>" +
+                        `<td id='varInfo' class='ui left aligned' style='vertical-align: top; border-right: 1px solid rgba(34, 36, 38, .15);' rowspan=7>` +
+                            `<div class=><h4 class='ui header'>${variant.variant}</h4></div>` +
+                            `<div>${variant.consequence}</div>` +
+                            `<div> </div>` +
+                            `<div>${featureTranscript.id} (MANE Select)</div>` +
+                            `<div>Showing exons ${closestEnd.rank} – ${closestStart.rank}</div>` +
+                            `<div>Region coordinates: ${variant.chrom}:${closestEnd.end}-${closestStart.start}</div>` +
+                        `</td>` +
+                        `<td class='ui left aligned'>5\`SS MaxEntScan</td>` +
+                        `<td>≥1.45</td>` +
+                        `<td ${ref.MES5>=1.45 ? "class='threshold'" : "class='error'"}>${ref.MES5}</td>` +
+                        `<td ${alt.MES5>=1.45 ? "class='threshold'" : "class='error'"}>${alt.MES5}</td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td class='ui left aligned'>3\`SS MaxEntScan</td>` +
+                        `<td>≥1.38</td>` +
+                        `<td ${ref.MES3>=1.38 ? "class='threshold'" : "class='error'"}>${ref.MES3}</td>` +
+                        `<td ${alt.MES3>=1.38 ? "class='threshold'" : "class='error'"}>${alt.MES3}</td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td class='ui left aligned'>Total MaxEntScan</td>` +
+                        `<td>≥7.41</td>` +
+                        `<td ${ref.MESTotal>=7.41 ? "class='threshold'" : "class='error'"}>${ref.MESTotal}</td>` +
+                        `<td ${alt.MESTotal>=7.41 ? "class='threshold'" : "class='error'"}>${alt.MESTotal}</td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td class='ui left aligned'>Number Ts and Cs</td>` +
+                        `<td>≥9</td>` +
+                        `<td ${ref.pptCount>=9 ? "class='threshold'" : "class='error'"}>${ref.pptCount}</td>` +
+                        `<td ${alt.pptCount>=9 ? "class='threshold'" : "class='error'"}>${alt.pptCount}</td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td class='ui left aligned'>Additional AG</td>` +
+                        `<td>=0</td>` +
+                        `<td ${ref.AGEZ==0 ? "class='threshold'" : "class='error'"}>${ref.AGEZ}</td>` +
+                        `<td ${alt.AGEZ==0 ? "class='threshold'" : "class='error'"}>${alt.AGEZ}</td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td class='ui left aligned'>Intron length</td>` +
+                        `<td>≥80</td>` +
+                        `<td ${ref.intronLength>=80 ? "class='threshold'" : "class='error'"}>${ref.intronLength}</td>` +
+                        `<td ${alt.intronLength>=80 ? "class='threshold'" : "class='error'"}>${alt.intronLength}</td>` +
+                    "</tr>" +
+                    "<tr>" +
+                        `<td class='ui left aligned'>Branchpoint to AG</td>` +
+                        `<td>≥17</td>` +
+                        `<td>${ref.bpDistance}</td>` +
+                        `<td>${alt.bpDistance}</td>` +
+                    "</tr>" +
+                "</tbody>" +
+                "<tfoot>" +
+                    "<tr>" +
+                        `<th></th>` +
+                        `<th></th>` +
+                        `<th></th>` +
+                        `<th>${ref.usable ? "<i class='ui icon check circle cci_green'></i>Usable" : "<i class='ui icon times circle red'></i>Not usable"}</th>` +
+                        `<th>${alt.usable ? "<i class='ui icon check circle cci_green'></i>Usable" : "<i class='ui icon times circle red'></i>Not usable"}</th>` +
+                    "</tr>" +
+                "</tfoot>" +
+            "</table>" +
             "</div>")
+              
 
 	} catch (error) {
         console.error(error);
@@ -1505,6 +1582,75 @@ async function fetchAndDisplaySequence(variant) {
         document.getElementById('sequence-container').textContent = 'Error fetching sequence.';
     }
 }
+
+async function requirements(sequence) {
+    const req = {};
+    
+    // Get MaxEntScan Scores (maxentpy ingested into API)
+    const donor_seq = sequence.substring(buffer-3, buffer+6);
+    const acceptor_seq = sequence.substring(sequence.length-buffer-20, sequence.length-buffer+3);
+    req.MES5 = await MaxEntScan(donor_seq, 5);
+    req.MES3 = await MaxEntScan(acceptor_seq, 3);
+    req.MESTotal = req.MES3 + req.MES5;
+
+    // Count "AG" in c.x-13 to c.x-6 (A of AG within cooordinate window)
+    // TODO: Count "AG" in full AGEZ window using branchpoint location
+    const AGEZ_seq = sequence.substring(sequence.length-buffer-13, sequence.length-buffer-4);
+    req.AGEZ = (AGEZ_seq.match(/AG/g)||[]).length;
+
+    // Count Ts and Cs in c.x-24 to c.x-5 (inclusive)
+    const ppt_seq = sequence.substring(sequence.length-buffer-24, sequence.length-buffer-4);
+    req.pptCount = (ppt_seq.match(/T|C/g)||[]).length;
+
+    // Get intron length from input sequence (minus buffer)
+    req.intronLength = sequence.length-buffer*2;
+
+    // Get any branchpoint < 50bps from exon start
+    const bp_seq = sequence.substring(sequence.length-buffer-52, sequence.length-buffer-4);
+    const bp = findBranchpoint(bp_seq, sequence.length-buffer-52);
+
+    if (bp.length === 0) {
+        // No branchpoints
+        req.bpDistance = 0;
+        req.bpDistanceLowest = 0;
+    } else {
+        // Only return values within region
+        let return_bp = bp.filter(t => typeof t.label === 'number' && t.label <= -20);
+        if (return_bp.length === 0) {
+            return_bp = bp;
+        }
+
+        const labels = return_bp
+            .filter(t => typeof t.label === 'number')
+            .map(t => -t.label -3);
+        
+        req.bpDistanceLowest = Math.min(...labels);
+        req.bpDistance = labels.join(', ');
+
+        console.log(req.bpDistanceLowest);
+    }
+
+    if (req.MES5 >= 1.45 & req.MES3 >= 1.38 & req.MESTotal >= 7.41 & req.pptCount >= 9 & req.AGEZ == 0 & req.intronLength >= 80) {
+        req.usable = true
+    } else {
+        req.usable = false
+    }
+
+    return req;
+}
+
+// Use API to get MaxEntScan score
+async function MaxEntScan(sequence, site) {
+    
+    const result = await getMaxEntScan({
+        sequence: sequence,
+        score: site
+    });
+    const rounded = Math.round(result.result*100)/100;
+    
+    return rounded
+}
+      
 
 async function parseVariant() {
 	const variant = $("#variant").val().trim()
@@ -1639,4 +1785,3 @@ function replaceCharAt(sequence, var_pos, ref, alt) {
 
     return sequence.substring(0, var_pos) + alt + sequence.substring(var_pos + 1);
 }
-
