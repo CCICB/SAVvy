@@ -301,6 +301,14 @@ td .columns p {
     line-height: 1em;
 }
 
+#requirements>tbody>tr>td {
+    padding: .5em .5em;
+}
+
+#varInfo>div {
+    margin: 10px;
+}
+
 /* Sequence viewer */
 .sequence {
     display: flex; /* Prevents spans from wrapping */

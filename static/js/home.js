@@ -1501,12 +1501,11 @@ async function fetchAndDisplaySequence(variant) {
         const alt = await requirements(alt_sequence);
 
 		$('#' + 'sequence-container').html("<div>" +
-            `<h3>MANE Select Transcript: ${featureTranscript.id}</h3>` +
-		    `<p>Exons in region: ${closestEnd.rank} - ${closestStart.rank}</p>` +
-		    `<p>Sequence for region: ${variant.chrom}:${closestEnd.end}-${closestStart.start}</p>` +
-		    `<p style="overflow: scroll;">${sequence}</p>` +
+            `<h3 class='ui header'>Splicing Requirements</h3>` +
+            `<p>The following requirements define the sequence, spacing, and motif strength required for splicing. 95.9% of U2 introns satisfy all criteria.</p>` +
             "<table id='requirements' class='ui center aligned table'>" +
                 "<thead><tr>" +
+                    "<th class='ui left aligned'>Variant Information</th>" +
                     "<th class='ui left aligned'>Metric</th>" +
                     "<th>Required Value</th>" +
                     "<th>REF Sequence</th>" +
@@ -1514,6 +1513,14 @@ async function fetchAndDisplaySequence(variant) {
                 "</tr></thead>" +
                 "<tbody>" +
                     "<tr>" +
+                        `<td id='varInfo' class='ui left aligned' style='vertical-align: top; border-right: 1px solid rgba(34, 36, 38, .15);' rowspan=7>` +
+                            `<div class=><h4 class='ui header'>${variant.variant}</h4></div>` +
+                            `<div>${variant.consequence}</div>` +
+                            `<div> </div>` +
+                            `<div>${featureTranscript.id} (MANE Select)</div>` +
+                            `<div>Showing exons ${closestEnd.rank} – ${closestStart.rank}</div>` +
+                            `<div>Region coordinates: ${variant.chrom}:${closestEnd.end}-${closestStart.start}</div>` +
+                        `</td>` +
                         `<td class='ui left aligned'>5\`SS MaxEntScan</td>` +
                         `<td>≥1.45</td>` +
                         `<td ${ref.MES5>=1.45 ? "class='threshold'" : "class='error'"}>${ref.MES5}</td>` +
@@ -1558,6 +1565,7 @@ async function fetchAndDisplaySequence(variant) {
                 "</tbody>" +
                 "<tfoot>" +
                     "<tr>" +
+                        `<th></th>` +
                         `<th></th>` +
                         `<th></th>` +
                         `<th>${ref.usable ? "<i class='ui icon check circle cci_green'></i>Usable" : "<i class='ui icon times circle red'></i>Not usable"}</th>` +
