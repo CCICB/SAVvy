@@ -77,6 +77,10 @@ footer {
     height: 100px;
 }
 
+i.cci_green {
+    color: #00965c!important;
+}
+
 .ui.button.cci_green {
     background-color: #00965c!important;
     color: white;

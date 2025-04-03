@@ -1516,38 +1516,38 @@ async function fetchAndDisplaySequence(variant) {
                     "<tr>" +
                         `<td class='ui left aligned'>5\`SS MaxEntScan</td>` +
                         `<td>≥1.45</td>` +
-                        `<td>${ref.MES5}</td>` +
-                        `<td>${alt.MES5}</td>` +
+                        `<td ${ref.MES5>=1.45 ? "class='threshold'" : "class='error'"}>${ref.MES5}</td>` +
+                        `<td ${alt.MES5>=1.45 ? "class='threshold'" : "class='error'"}>${alt.MES5}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>3\`SS MaxEntScan</td>` +
                         `<td>≥1.38</td>` +
-                        `<td>${ref.MES3}</td>` +
-                        `<td>${alt.MES3}</td>` +
+                        `<td ${ref.MES3>=1.38 ? "class='threshold'" : "class='error'"}>${ref.MES3}</td>` +
+                        `<td ${alt.MES3>=1.38 ? "class='threshold'" : "class='error'"}>${alt.MES3}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>Total MaxEntScan</td>` +
                         `<td>≥7.41</td>` +
-                        `<td>${ref.MESTotal}</td>` +
-                        `<td>${alt.MESTotal}</td>` +
+                        `<td ${ref.MESTotal>=7.41 ? "class='threshold'" : "class='error'"}>${ref.MESTotal}</td>` +
+                        `<td ${alt.MESTotal>=7.41 ? "class='threshold'" : "class='error'"}>${alt.MESTotal}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>Number Ts and Cs</td>` +
                         `<td>≥9</td>` +
-                        `<td>${ref.pptCount}</td>` +
-                        `<td>${alt.pptCount}</td>` +
+                        `<td ${ref.pptCount>=9 ? "class='threshold'" : "class='error'"}>${ref.pptCount}</td>` +
+                        `<td ${alt.pptCount>=9 ? "class='threshold'" : "class='error'"}>${alt.pptCount}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>Additional AG</td>` +
                         `<td>=0</td>` +
-                        `<td>${ref.AGEZ}</td>` +
-                        `<td>${alt.AGEZ}</td>` +
+                        `<td ${ref.AGEZ==0 ? "class='threshold'" : "class='error'"}>${ref.AGEZ}</td>` +
+                        `<td ${alt.AGEZ==0 ? "class='threshold'" : "class='error'"}>${alt.AGEZ}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>Intron length</td>` +
                         `<td>≥80</td>` +
-                        `<td>${ref.intronLength}</td>` +
-                        `<td>${alt.intronLength}</td>` +
+                        `<td ${ref.intronLength>=80 ? "class='threshold'" : "class='error'"}>${ref.intronLength}</td>` +
+                        `<td ${alt.intronLength>=80 ? "class='threshold'" : "class='error'"}>${alt.intronLength}</td>` +
                     "</tr>" +
                     "<tr>" +
                         `<td class='ui left aligned'>Branchpoint to AG</td>` +
@@ -1556,8 +1556,17 @@ async function fetchAndDisplaySequence(variant) {
                         `<td>${alt.bpDistance}</td>` +
                     "</tr>" +
                 "</tbody>" +
+                "<tfoot>" +
+                    "<tr>" +
+                        `<th></th>` +
+                        `<th></th>` +
+                        `<th>${ref.usable ? "<i class='ui icon check circle cci_green'></i>Usable" : "<i class='ui icon times circle red'></i>Not usable"}</th>` +
+                        `<th>${alt.usable ? "<i class='ui icon check circle cci_green'></i>Usable" : "<i class='ui icon times circle red'></i>Not usable"}</th>` +
+                    "</tr>" +
+                "</tfoot>" +
             "</table>" +
             "</div>")
+              
 
 	} catch (error) {
         console.error(error);
@@ -1611,6 +1620,12 @@ async function requirements(sequence) {
         req.bpDistance = labels.join(', ');
 
         console.log(req.bpDistanceLowest);
+    }
+
+    if (req.MES5 >= 1.45 & req.MES3 >= 1.38 & req.MESTotal >= 7.41 & req.pptCount >= 9 & req.AGEZ == 0 & req.intronLength >= 80) {
+        req.usable = true
+    } else {
+        req.usable = false
     }
 
     return req;
@@ -1762,4 +1777,3 @@ function replaceCharAt(sequence, var_pos, ref, alt) {
 
     return sequence.substring(0, var_pos) + alt + sequence.substring(var_pos + 1);
 }
-
