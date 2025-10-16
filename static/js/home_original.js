@@ -668,6 +668,7 @@ makeRequest = async (path, method, body) => {
     if (localStorage.getItem("splicevardb_token")) {
         token = localStorage.getItem("splicevardb_token");
     } else {
+		// read-only, limited token
         token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IjBiM2VjYjFjLTVhMDAtMTM4Yi0yYjRjLTdlYjdjZmNhMTA1YiIsImlhdCI6MTUxNjIzOTAyMn0.PByel7nVtTsKJLXIekcN_kbl1eHV0K-eBwq6zee9xTQ'
     }
 
